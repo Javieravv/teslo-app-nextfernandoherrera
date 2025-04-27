@@ -1,6 +1,6 @@
 import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
-import Credentials from 'next-auth/providers/credentials';
+import CredentialsProvider from 'next-auth/providers/credentials';
 
 import { dbUsers } from '../../../database';
 
@@ -9,15 +9,14 @@ export default NextAuth({
   providers: [
     
     // ...add more providers here
-
-    Credentials({
+    CredentialsProvider({
       name: 'Custom Login',
       credentials: {
         email: { label: 'Correo:', type: 'email', placeholder: 'correo@google.com'  },
         password: { label: 'Contraseña:', type: 'password', placeholder: 'Contraseña'  },
       },
       async authorize(credentials) {
-        console.log({credentials})
+        console.log('ESTAS SON LAS CREDENCIALES....',{credentials})
         // return { name: 'Juan', correo: 'juan@google.com', role: 'admin' };
 
         return await dbUsers.checkUserEmailPassword( credentials!.email, credentials!.password );
@@ -27,10 +26,9 @@ export default NextAuth({
 
 
     GithubProvider({
-      clientId: process.env.GITHUB_ID,
-      clientSecret: process.env.GITHUB_SECRET,
+      clientId: process.env.GITHUB_ID || '',
+      clientSecret: process.env.GITHUB_SECRET || '',
     }),
-
 
   ],
 
@@ -42,7 +40,7 @@ export default NextAuth({
 
   // Callbacks
   jwt: {
-    // secret: process.env.JWT_SECRET_SEED, // deprecated
+    secret: process.env.JWT_SECRET_SEED, // deprecated
   },
   
   session: {
@@ -53,13 +51,11 @@ export default NextAuth({
 
 
   callbacks: {
-
     async jwt({ token, account, user }) {
       // console.log({ token, account, user });
 
       if ( account ) {
         token.accessToken = account.access_token;
-
         switch( account.type ) {
 
           case 'oauth': 
@@ -72,7 +68,6 @@ export default NextAuth({
         }
 
       }
-
       return token;
     },
 

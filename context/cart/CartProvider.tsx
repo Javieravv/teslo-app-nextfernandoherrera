@@ -164,7 +164,6 @@ export const CartProvider:FC = ({ children }) => {
         try {
             
             const { data } = await tesloApi.post<IOrder>('/orders', body);
-
             dispatch({ type: '[Cart] - Order complete' });
 
             return {
@@ -174,6 +173,7 @@ export const CartProvider:FC = ({ children }) => {
 
 
         } catch (error) {
+            console.log ('SE HA PRESENTADO UN ERRORR....', { error })
             if ( axios.isAxiosError(error) ) {
                 return {
                     hasError: true,

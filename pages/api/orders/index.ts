@@ -10,10 +10,10 @@ type Data =
 | IOrder;
 
 export default function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
-    
 
     switch( req.method ) {
         case 'POST':
+            console.log ('ENTRAMOS A CREAR UNA ORDEN.....')
             return createOrder( req, res );
 
         default:
@@ -25,11 +25,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<Data>)
 }
 
 const createOrder = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
-    
     const { orderItems, total } = req.body as IOrder;
-
     // Vericar que tengamos un usuario
     const session: any = await getSession({ req });
+    console.log ('DATOS DE LA SESION....',{session})
     if ( !session ) {
         return res.status(401).json({message: 'Debe de estar autenticado para hacer esto'});
     }
